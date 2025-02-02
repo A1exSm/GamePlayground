@@ -16,6 +16,7 @@ public class GameWorld extends World {
     private UserView view;
     private Walker player;
     ArrayList<SolidFixture> playerFixtureList;
+    private boolean debugOn;
     // constructor
     public GameWorld() {
         super();
@@ -25,8 +26,6 @@ public class GameWorld extends World {
         setPlayer();
         keyboardInputs();
         viewTracker();
-//        simSet();
-//        playerCollisions();
         // end of constructor start of a new world :)
         start();
     }
@@ -36,16 +35,6 @@ public class GameWorld extends World {
         view.setFocusable(true);
         view.requestFocus();
         view.setFocusable(true);
-    }
-    private void viewTracker() {
-        addStepListener(new StepListener() {
-            @Override
-            public void preStep(StepEvent event) {
-                view.setCentre(player.getPosition());
-            }
-            @Override
-            public void postStep(StepEvent event) {}
-        });
     }
     private void setupJFrame() {
         JFrame frame = new JFrame("GamePlayground");
@@ -60,7 +49,6 @@ public class GameWorld extends World {
 //        SimulationSettings sim = new SimulationSettings(60);
 //    }
     // debug methods
-    boolean debugOn;
     private void debugOn() {
         view.setGridResolution(!debugOn ? 1 : 0);
         debugOn = !debugOn;
@@ -92,16 +80,6 @@ public class GameWorld extends World {
 //        }
     }
 
-//    private void playerCollisions() {
-//        player.addCollisionListener(e -> {
-//            if (!e.getOtherBody().getName().equals("Ground0")) {
-//                if (e.getNormal().y == 0) {
-//                    System.out.println("collided with " + e.getOtherBody().getName());
-//
-//                }
-//            }
-//        });
-//    }
     private void Stairs(Vec2 halfStepDimensions, Vec2 originPos, int numSteps, String vertical, String horizontal) {
         if (vertical.equals("DOWN")) halfStepDimensions.y = -halfStepDimensions.y;
         if (horizontal.equals("LEFT")) halfStepDimensions.x = -halfStepDimensions.x;
@@ -109,39 +87,29 @@ public class GameWorld extends World {
             new StaticBody(this, new BoxShape(halfStepDimensions.x, halfStepDimensions.y, new Vec2(originPos.x + ((halfStepDimensions.x*2) * i), originPos.y + ((halfStepDimensions.y*2) *i))));
         }
     }
-    // keyboard inputs
-    private void keyboardInputs() {
-        Set<Integer> keysPressed = new HashSet<>();
-
-        view.addKeyListener(new KeyAdapter() {
+    // Method Override
+    private void viewTracker() {
+        addStepListener(new StepListener() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                int key = e.getKeyCode();
-                keysPressed.add(key);
-
-                if (key == KeyEvent.VK_A) {
-                    player.startWalking(-6);
-                } else if (key == KeyEvent.VK_D) {
-                    player.startWalking(6);
-                } else if (key == KeyEvent.VK_1) {
-                    debugOn();
-                } else if (key == KeyEvent.VK_SPACE) {
-                    player.jump(10);
-                }
+            public void preStep(StepEvent event) {
+                view.setCentre(player.getPosition());
             }
-
             @Override
-            public void keyReleased(KeyEvent e) {
-                int key = e.getKeyCode();
-                keysPressed.remove(key);
+            public void postStep(StepEvent event) {}
+        });
+    }
+    /*
+    private void playerCollisions() {
+        player.addCollisionListener(e -> {
+            if (!e.getOtherBody().getName().equals("Ground0")) {
+                if (e.getNormal().y == 0) {
+                    System.out.println("collided with " + e.getOtherBody().getName());
 
-                if ((key == KeyEvent.VK_A || key == KeyEvent.VK_D) && !keysPressed.contains(KeyEvent.VK_A) && !keysPressed.contains(KeyEvent.VK_D)) {
-                    player.stopWalking();
                 }
             }
         });
     }
-    /*
+     */
     private void keyboardInputs() {
         view.addKeyListener(new KeyAdapter() {
             int keyPressed;
@@ -164,5 +132,4 @@ public class GameWorld extends World {
            }
         });
     }
-     */
 }
