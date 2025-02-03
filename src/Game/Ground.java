@@ -32,4 +32,9 @@ class Ground extends StaticBody {
     public static int getCount() {
         return count;
     }
+    static class Platform extends Ground {
+        public Platform(GameWorld gameWorld, Vec2 originPos) {
+            super(gameWorld, new Vec2(5, 0.5f), originPos);
+        }
+    }
 }

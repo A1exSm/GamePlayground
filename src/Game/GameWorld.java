@@ -2,26 +2,22 @@ package Game;
 import city.cs.engine.*;
 import city.cs.engine.Shape;
 import org.jbox2d.common.Vec2;
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 
 
 public class GameWorld extends World {
-    private UserView view;
+    private GameView view;
     private Walker player;
     ArrayList<SolidFixture> playerFixtureList;
     private boolean debugOn;
     // constructor
     public GameWorld() {
         super();
-        viewSetup();
-        setupJFrame();
+        this.view = new GameView(this,500,500);
+        new GameFrame("GamePlayground", this.view);
         populate();
         setPlayer();
         keyboardInputs();
@@ -29,25 +25,6 @@ public class GameWorld extends World {
         // end of constructor start of a new world :)
         start();
     }
-    // setup methods
-    private void viewSetup() {
-        view = new UserView(this, 900, 900);
-        view.setFocusable(true);
-        view.requestFocus();
-        view.setFocusable(true);
-    }
-    private void setupJFrame() {
-        JFrame frame = new JFrame("GamePlayground");
-        frame.add(view);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationByPlatform(true);
-        frame.setResizable(true);
-        frame.pack();
-        frame.setVisible(true);
-    }
-//    private void simSet() {
-//        SimulationSettings sim = new SimulationSettings(60);
-//    }
     // debug methods
     private void debugOn() {
         view.setGridResolution(!debugOn ? 1 : 0);
@@ -62,6 +39,8 @@ public class GameWorld extends World {
         }))).setPosition(new Vec2(6,1));
         SolidFixture groundFixture = new SolidFixture(ground, new BoxShape(10, 1f));
 //        groundFixture.setFriction(5f);
+        new Ground.Platform(this, new Vec2(20,4));
+        new Ground.Platform(this, new Vec2(27,7));
     }
     private List<Vec2> polygon(Vec2[] points) {
         return new ArrayList<>(Arrays.asList(points));
@@ -71,13 +50,12 @@ public class GameWorld extends World {
         Shape playerShape = new BoxShape(1,2);
         player = new Walker(this, playerShape);
         player.setPosition(new Vec2(0, 3f));
-        addPlayerFixtures();
+//        addPlayerFixtures();
+        player.addImage(new BodyImage("data/player.png", 5.5f));
+        player.setAlwaysOutline(true);
     }
     private void addPlayerFixtures() {
         playerFixtureList = new ArrayList<>(Arrays.asList(new SolidFixture(player, new BoxShape(0.4f,1f, new Vec2(-0.6f, -3f))),new SolidFixture(player, new BoxShape(0.4f,1f, new Vec2(0.6f, -3f)))));
-//        for (SolidFixture solidFixture : playerFixtureList) {
-//            solidFixture.setFriction(20f);
-//        }
     }
 
     private void Stairs(Vec2 halfStepDimensions, Vec2 originPos, int numSteps, String vertical, String horizontal) {
@@ -117,7 +95,8 @@ public class GameWorld extends World {
            @Override
            public void keyPressed(KeyEvent e) {
                keyPressed = e.getKeyCode();
-               if (keyPressed == KeyEvent.VK_A || keyPressed == KeyEvent.VK_D) player.startWalking((keyPressed==KeyEvent.VK_A) ? -6 : 6);
+               if (keyPressed == KeyEvent.VK_A) player.startWalking(-7);
+               else if (keyPressed == KeyEvent.VK_D) player.startWalking( 7);
                else if (keyPressed == KeyEvent.VK_1) debugOn();
                else if (keyPressed == KeyEvent.VK_SPACE) player.jump(10);
            }
