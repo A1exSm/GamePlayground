@@ -8,7 +8,7 @@ import java.awt.*;
 class GameView extends UserView {
     private GameWorld gameWorld;
     private static int time = 0;
-    private Image background = new ImageIcon("data/sky.png").getImage();
+    private final Image background = new ImageIcon("data/sky.png").getImage();
 
     protected GameView(GameWorld gameWorld, int width, int height) {
         super(gameWorld, width, height);
